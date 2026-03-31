@@ -141,7 +141,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-
+~
             {/* Registrar Dashboard */}
 
             <Route

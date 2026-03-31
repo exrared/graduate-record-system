@@ -16,13 +16,32 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Admin account
-        User::create([
-            'name' => 'Admin',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('admin123'),
-            'role' => 'admin'
+
+        $this->call([
+             RoleSeeder::class,
+             GraduateSeeder::class,
+             RecordRequestSeeder::class,
+             RecordScheduleSeeder::class,
+             PaymentSeeder::class,
+             StudentRecordSeeder::class,
+             ActivityLogSeeder::class,
+             AccessRightSeeder::class,
+             AccessRoleSeeder::class,
+             AdminSeeder::class,
         ]);
+
+        // Admin account
+        User::updateOrCreate(
+        ['email' => 'admin@example.com'], // unique field
+        [
+            'name' => 'Admin',
+            'username' => 'admin',
+            'password' => Hash::make('password'),
+            'role' => 'admin',
+            'status' => 1,
+        ]
+        
+    );
 
         // Optional test user
         //User::factory()->create([

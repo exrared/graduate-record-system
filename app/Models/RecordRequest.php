@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Graduate;
 
 class RecordRequest extends Model
 {
@@ -33,5 +32,17 @@ class RecordRequest extends Model
     public function graduate()
     {
         return $this->belongsTo(Graduate::class);
+    }
+
+    // Relation to RecordSchedule
+    public function schedule()
+    {
+        return $this->hasOne(RecordSchedule::class, 'request_id');
+    }
+
+    // Relation to Payment
+    public function payment()
+    {
+        return $this->hasOne(Payment::class, 'request_id');
     }
 }

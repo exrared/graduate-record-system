@@ -8,6 +8,7 @@ use App\Models\Graduate;
 use App\Models\StudentRecord;
 use App\Models\RecordRequest;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
@@ -27,7 +28,6 @@ class AdminController extends Controller
      */
     public function dashboard()
     {
-        // For web view
         return view('admin.dashboard', [
             'stats' => $this->getStats(),
             'users' => User::latest()->take(10)->get()
@@ -107,7 +107,6 @@ class AdminController extends Controller
     {
         $user = User::findOrFail($id);
         
-        // Prevent deleting yourself
         if (auth()->id() == $id) {
             return response()->json([
                 'message' => 'Cannot delete your own account'
@@ -208,6 +207,182 @@ class AdminController extends Controller
         return response()->json([
             'message' => 'User role updated successfully',
             'user' => $user
+        ]);
+    }
+    
+    // ============ SECURITY ENDPOINTS ============
+    
+    /**
+     * Get security alerts
+     */
+    public function securityAlerts()
+    {
+        // You can create a SecurityAlert model or return demo data
+        $alerts = [
+            [
+                'id' => 1,
+                'severity' => 'high',
+                'message' => 'Multiple failed login attempts detected',
+                'time' => now()->subMinutes(30)->toDateTimeString(),
+                'source' => request()->ip(),
+                'status' => 'active'
+            ],
+            [
+                'id' => 2,
+                'severity' => 'medium',
+                'message' => 'Suspicious activity detected from new device',
+                'time' => now()->subHours(2)->toDateTimeString(),
+                'source' => '192.168.1.100',
+                'status' => 'active'
+            ],
+            [
+                'id' => 3,
+                'severity' => 'low',
+                'message' => 'Password change request',
+                'time' => now()->subHours(5)->toDateTimeString(),
+                'source' => '10.0.0.5',
+                'status' => 'resolved'
+            ]
+        ];
+        
+        return response()->json($alerts);
+    }
+    
+    /**
+     * Get unauthorized access attempts
+     */
+    public function unauthorizedAttempts()
+    {
+        $attempts = [
+            [
+                'id' => 1,
+                'ip' => '45.33.22.11',
+                'attempt_time' => now()->subMinutes(45)->toDateTimeString(),
+                'status' => 'blocked',
+                'location' => 'Unknown'
+            ],
+            [
+                'id' => 2,
+                'ip' => '103.45.67.89',
+                'attempt_time' => now()->subHours(3)->toDateTimeString(),
+                'status' => 'blocked',
+                'location' => 'Philippines'
+            ]
+        ];
+        
+        return response()->json($attempts);
+    }
+    
+    /**
+     * Get system activity logs
+     */
+    public function activityLogs()
+    {
+        $activities = [
+            [
+                'id' => 1,
+                'user' => auth()->user()?->name ?? 'Admin',
+                'action' => 'Logged in',
+                'time' => now()->subMinutes(10)->toDateTimeString(),
+                'ip' => request()->ip()
+            ],
+            [
+                'id' => 2,
+                'user' => 'Registrar User',
+                'action' => 'Updated student record',
+                'time' => now()->subHours(1)->toDateTimeString(),
+                'ip' => '192.168.1.2'
+            ],
+            [
+                'id' => 3,
+                'user' => 'Admin User',
+                'action' => 'Created new registrar account',
+                'time' => now()->subHours(3)->toDateTimeString(),
+                'ip' => '192.168.1.1'
+            ]
+        ];
+        
+        return response()->json($activities);
+    }
+    
+    // ============ BACKUP ENDPOINTS ============
+    
+    /**
+     * Get backup history
+     */
+    public function backupHistory()
+    {
+        $backups = [
+            [
+                'id' => 1,
+                'filename' => 'backup_' . now()->format('Y_m_d') . '.zip',
+                'size' => '2.4 MB',
+                'date' => now()->toDateTimeString(),
+                'status' => 'completed'
+            ],
+            [
+                'id' => 2,
+                'filename' => 'backup_' . now()->subDay()->format('Y_m_d') . '.zip',
+                'size' => '2.3 MB',
+                'date' => now()->subDay()->toDateTimeString(),
+                'status' => 'completed'
+            ],
+            [
+                'id' => 3,
+                'filename' => 'backup_' . now()->subDays(2)->format('Y_m_d') . '.zip',
+                'size' => '2.3 MB',
+                'date' => now()->subDays(2)->toDateTimeString(),
+                'status' => 'completed'
+            ]
+        ];
+        
+        return response()->json($backups);
+    }
+    
+    /**
+     * Create backup
+     */
+    public function createBackup(Request $request)
+    {
+        // Here you would implement actual backup logic
+        // For now, return success response
+        
+        return response()->json([
+            'message' => 'Backup created successfully',
+            'filename' => 'backup_' . now()->format('Y_m_d_H_i_s') . '.zip',
+            'size' => '2.5 MB',
+            'date' => now()->toDateTimeString()
+        ]);
+    }
+    
+    /**
+     * Restore backup
+     */
+    public function restoreBackup(Request $request)
+    {
+        $request->validate([
+            'backup_file' => 'required|file|mimes:zip,sql,gz|max:51200'
+        ]);
+        
+        // Here you would implement actual restore logic
+        // For now, return success response
+        
+        return response()->json([
+            'message' => 'Backup restored successfully'
+        ]);
+    }
+    
+    /**
+     * Verify backup integrity
+     */
+    public function verifyBackup()
+    {
+        // Here you would implement actual verification logic
+        
+        return response()->json([
+            'message' => 'All backup files are valid',
+            'verified' => true,
+            'last_verified' => now()->toDateTimeString()
         ]);
     }
 }

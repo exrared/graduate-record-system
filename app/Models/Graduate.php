@@ -47,7 +47,6 @@ class Graduate extends Model
 
     protected $casts = [
         'birthdate' => 'date',
-        'year_graduated' => 'integer',
         'status' => 'boolean',
         'date_created' => 'datetime',
         'date_updated' => 'datetime',

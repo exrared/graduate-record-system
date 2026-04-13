@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\StudentRecord;
+use App\Models\Graduate;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
@@ -127,5 +129,35 @@ class StudentRecordController extends Controller
         }
 
         return response()->download(storage_path('app/public/' . $record->file_path));
+    }
+
+    // ========== ADD THIS METHOD FOR GRADUATE PORTAL ==========
+    /**
+     * Get my records (for authenticated graduate)
+     * This returns only the records belonging to the logged-in graduate
+     */
+    public function myRecords()
+    {
+        $user = Auth::user();
+        
+        // Find the graduate profile associated with the authenticated user
+        $graduate = Graduate::where('user_id', $user->id)->first();
+        
+        if (!$graduate) {
+            return response()->json([
+                'message' => 'Graduate profile not found',
+                'records' => []
+            ]);
+        }
+        
+        // Get all records for this graduate
+        $records = StudentRecord::where('graduate_id', $graduate->id)->get();
+        
+        // Add full URL for file download if needed
+        foreach ($records as $record) {
+            $record->file_url = $record->file_path ? Storage::url($record->file_path) : null;
+        }
+        
+        return response()->json($records);
     }
 }

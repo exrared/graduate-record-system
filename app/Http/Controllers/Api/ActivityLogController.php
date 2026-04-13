@@ -9,10 +9,81 @@ use Illuminate\Support\Facades\Validator;
 
 class ActivityLogController extends Controller
 {
-    // List all activity logs
-    public function index()
+    // List all activity logs (Admin only)
+    public function index(Request $request)
     {
-        return response()->json(ActivityLog::with('user')->get());
+        $query = ActivityLog::with('user');
+        
+        // Filter by user role
+        if ($request->user_role) {
+            $query->where('user_role', $request->user_role);
+        }
+        
+        // Filter by action
+        if ($request->action) {
+            $query->where('action', $request->action);
+        }
+        
+        // Filter by module
+        if ($request->module) {
+            $query->where('module', $request->module);
+        }
+        
+        // Filter by date range
+        if ($request->start_date) {
+            $query->whereDate('log_date', '>=', $request->start_date);
+        }
+        if ($request->end_date) {
+            $query->whereDate('log_date', '<=', $request->end_date);
+        }
+        
+        // Sort
+        $sortBy = $request->sort_by ?? 'log_date';
+        $sortOrder = $request->sort_order ?? 'desc';
+        $query->orderBy($sortBy, $sortOrder);
+        
+        // Paginate
+        $perPage = $request->per_page ?? 50;
+        $logs = $query->paginate($perPage);
+        
+        return response()->json($logs);
+    }
+    
+    // Get logs for registrar
+    public function registrarLogs(Request $request)
+    {
+        $query = ActivityLog::with('user')
+            ->where('user_role', 'registrar')
+            ->orWhere('user_role', 'admin');
+        
+        if ($request->action) {
+            $query->where('action', $request->action);
+        }
+        
+        if ($request->module) {
+            $query->where('module', $request->module);
+        }
+        
+        $logs = $query->orderBy('log_date', 'desc')
+            ->paginate(50);
+        
+        return response()->json($logs);
+    }
+    
+    // Get logs for specific user
+    public function userLogs($userId, Request $request)
+    {
+        $query = ActivityLog::with('user')
+            ->where('user_id', $userId);
+        
+        if ($request->action) {
+            $query->where('action', $request->action);
+        }
+        
+        $logs = $query->orderBy('log_date', 'desc')
+            ->paginate(50);
+        
+        return response()->json($logs);
     }
 
     // Store a new activity log
@@ -20,20 +91,31 @@ class ActivityLogController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'user_id' => 'required|exists:users,id',
-            'activity' => 'required|string',
+            'action' => 'required|string',
+            'module' => 'required|string',
+            'description' => 'required|string',
             'ip_address' => 'nullable|string',
             'device' => 'nullable|string',
-            'log_date' => 'nullable|date',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $log = ActivityLog::create(array_merge(
-            $validator->validated(),
-            ['log_date' => $request->log_date ?? now()]
-        ));
+        $log = ActivityLog::create([
+            'user_id' => $request->user_id,
+            'user_role' => $request->user_role ?? 'unknown',
+            'action' => $request->action,
+            'module' => $request->module,
+            'description' => $request->description,
+            'activity' => $request->description,
+            'old_data' => $request->old_data,
+            'new_data' => $request->new_data,
+            'ip_address' => $request->ip_address ?? request()->ip(),
+            'device' => $request->device ?? request()->userAgent(),
+            'user_agent' => $request->user_agent ?? request()->userAgent(),
+            'log_date' => now(),
+        ]);
 
         return response()->json($log, 201);
     }
@@ -41,40 +123,65 @@ class ActivityLogController extends Controller
     // Show a single log
     public function show($id)
     {
-        return response()->json(ActivityLog::with('user')->findOrFail($id));
-    }
-
-    // Update a log
-    public function update(Request $request, $id)
-    {
-        $log = ActivityLog::findOrFail($id);
-
-        $validator = Validator::make($request->all(), [
-            'user_id' => 'sometimes|exists:users,id',
-            'activity' => 'sometimes|string',
-            'ip_address' => 'nullable|string',
-            'device' => 'nullable|string',
-            'log_date' => 'nullable|date',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
-        $log->update(array_merge(
-            $validator->validated(),
-            ['log_date' => $request->log_date ?? $log->log_date]
-        ));
-
+        $log = ActivityLog::with('user')->findOrFail($id);
         return response()->json($log);
     }
 
-    // Delete a log
-    public function destroy($id)
+    // Export logs to CSV
+    public function export(Request $request)
     {
-        $log = ActivityLog::findOrFail($id);
-        $log->delete();
+        $query = ActivityLog::with('user');
+        
+        if ($request->user_role) {
+            $query->where('user_role', $request->user_role);
+        }
+        
+        if ($request->start_date) {
+            $query->whereDate('log_date', '>=', $request->start_date);
+        }
+        if ($request->end_date) {
+            $query->whereDate('log_date', '<=', $request->end_date);
+        }
+        
+        $logs = $query->orderBy('log_date', 'desc')->get();
+        
+        $filename = "activity_logs_" . date('Y-m-d_His') . ".csv";
+        $handle = fopen('php://temp', 'w+');
+        
+        // Headers
+        fputcsv($handle, ['ID', 'User', 'Role', 'Action', 'Module', 'Description', 'IP Address', 'Date']);
+        
+        foreach ($logs as $log) {
+            fputcsv($handle, [
+                $log->id,
+                $log->user->name ?? 'N/A',
+                $log->user_role,
+                $log->action,
+                $log->module,
+                $log->description,
+                $log->ip_address,
+                $log->log_date,
+            ]);
+        }
+        
+        rewind($handle);
+        $csv = stream_get_contents($handle);
+        fclose($handle);
+        
+        return response($csv, 200)
+            ->header('Content-Type', 'text/csv')
+            ->header('Content-Disposition', "attachment; filename=$filename");
+    }
 
-        return response()->json(['message' => 'Activity log deleted']);
+    // Delete old logs (Admin only)
+    public function clearOldLogs(Request $request)
+    {
+        $days = $request->days ?? 30;
+        $deleted = ActivityLog::where('log_date', '<', now()->subDays($days))->delete();
+        
+        return response()->json([
+            'message' => "Deleted {$deleted} old activity logs",
+            'deleted_count' => $deleted
+        ]);
     }
 }

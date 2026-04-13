@@ -18,19 +18,24 @@ const Table = ({
     }
   }
 
+  // Get column header text (supports both 'label' and 'header')
+  const getColumnHeader = (col) => {
+    return col.label || col.header || col.key
+  }
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50 dark:bg-gray-700">
             <tr>
-              {columns.map((col) => (
+              {columns.map((col, idx) => (
                 <th
-                  key={col.key}
+                  key={idx}
                   className="px-3 md:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
                   style={col.width ? { width: col.width } : {}}
                 >
-                  {col.label}
+                  {getColumnHeader(col)}
                 </th>
               ))}
               {showActions && (
@@ -41,76 +46,79 @@ const Table = ({
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            {data.map((item, index) => (
-              <tr
-                key={item.id || index}
-                className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                onMouseEnter={() => setHoveredRow(index)}
-                onMouseLeave={() => setHoveredRow(null)}
-              >
-                {columns.map((col) => (
-                  <td
-                    key={col.key}
-                    className="px-3 md:px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white"
-                    style={col.width ? { width: col.width } : {}}
-                  >
-                    {col.render ? col.render(item[col.key], item) : item[col.key]}
-                  </td>
-                ))}
-                {showActions && (
-                  <td className="px-3 md:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex items-center justify-end gap-2">
-                      {onStatusChange && (
-                        <button
-                          onClick={() => {
-                            const newStatus = item.status === 'active' ? 'inactive' : 'active'
-                            handleStatusChange(item, newStatus)
-                          }}
-                          className={`p-1.5 rounded transition-colors ${
-                            item.status === 'active'
-                              ? 'hover:bg-red-100 dark:hover:bg-red-900'
-                              : 'hover:bg-green-100 dark:hover:bg-green-900'
-                          }`}
-                          title={item.status === 'active' ? 'Set Inactive' : 'Set Active'}
-                        >
-                          {item.status === 'active' ? (
-                            <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
-                          ) : (
-                            <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
-                          )}
-                        </button>
-                      )}
-                      {onEdit && (
-                        <button
-                          onClick={() => onEdit(item)}
-                          className="p-1.5 rounded hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors"
-                          title="Edit"
-                        >
-                          <Edit2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                        </button>
-                      )}
-                      {onResetPassword && (
-                        <button
-                          onClick={() => onResetPassword(item)}
-                          className="p-1.5 rounded hover:bg-purple-100 dark:hover:bg-purple-900 transition-colors"
-                          title="Reset Password"
-                        >
-                          <RotateCcw className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                )}
+            {data && data.length > 0 ? (
+              data.map((item, index) => (
+                <tr
+                  key={item.id || index}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  onMouseEnter={() => setHoveredRow(index)}
+                  onMouseLeave={() => setHoveredRow(null)}
+                >
+                  {columns.map((col, idx) => (
+                    <td
+                      key={idx}
+                      className="px-3 md:px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white"
+                      style={col.width ? { width: col.width } : {}}
+                    >
+                      {col.render ? col.render(item) : (item[col.key] !== undefined ? item[col.key] : 'N/A')}
+                    </td>
+                  ))}
+                  {showActions && (
+                    <td className="px-3 md:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex items-center justify-end gap-2">
+                        {onStatusChange && (
+                          <button
+                            onClick={() => {
+                              const newStatus = item.status === 'active' ? 'inactive' : 'active'
+                              handleStatusChange(item, newStatus)
+                            }}
+                            className={`p-1.5 rounded transition-colors ${
+                              item.status === 'active'
+                                ? 'hover:bg-red-100 dark:hover:bg-red-900'
+                                : 'hover:bg-green-100 dark:hover:bg-green-900'
+                            }`}
+                            title={item.status === 'active' ? 'Set Inactive' : 'Set Active'}
+                          >
+                            {item.status === 'active' ? (
+                              <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
+                            ) : (
+                              <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
+                            )}
+                          </button>
+                        )}
+                        {onEdit && (
+                          <button
+                            onClick={() => onEdit(item)}
+                            className="p-1.5 rounded hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors"
+                            title="Edit"
+                          >
+                            <Edit2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                          </button>
+                        )}
+                        {onResetPassword && (
+                          <button
+                            onClick={() => onResetPassword(item)}
+                            className="p-1.5 rounded hover:bg-purple-100 dark:hover:bg-purple-900 transition-colors"
+                            title="Reset Password"
+                          >
+                            <RotateCcw className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  )}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={columns.length + (showActions ? 1 : 0)} className="text-center py-12 text-gray-500 dark:text-gray-400">
+                  No data available
+                </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
-      {data.length === 0 && (
-        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-          No data available
-        </div>
-      )}
     </div>
   )
 }

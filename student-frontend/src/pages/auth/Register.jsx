@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Button from '../components/Button'
-import api from '../api'
+import Button from '../../components/Button'
+import api from '../../services/api'  // ✅ FIXED: from '../../api' to '../../services/api'
 
 const Register = () => {
   const navigate = useNavigate()
@@ -13,11 +13,9 @@ const Register = () => {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // Auto-generate username from name
   const handleNameChange = (e) => {
     const newName = e.target.value
     setName(newName)
-    // Auto-generate username from name (lowercase, no spaces)
     if (!username || username === name.toLowerCase().replace(/\s/g, '')) {
       setUsername(newName.toLowerCase().replace(/\s/g, ''))
     }
@@ -45,14 +43,12 @@ const Register = () => {
     
     api.defaults.headers.common['Authorization'] = `${token_type} ${token}`
 
-    // Redirect to user dashboard directly (no complete-profile)
     navigate('/user-dashboard', { replace: true })
 
     } catch (err) {
       console.error('Registration error:', err.response?.data)
       
       if (err.response?.data?.errors) {
-        // Laravel validation errors
         const messages = Object.values(err.response.data.errors).flat().join(' ')
         setError(messages)
       } else if (err.response?.data?.message) {
@@ -80,7 +76,6 @@ const Register = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Full Name */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
               Full Name *
@@ -97,7 +92,6 @@ const Register = () => {
             />
           </div>
 
-          {/* Username */}
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
               Username *
@@ -115,7 +109,6 @@ const Register = () => {
             <p className="text-xs text-gray-500 mt-1">This will be your unique identifier (lowercase letters, numbers only)</p>
           </div>
 
-          {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
               Email Address *
@@ -132,7 +125,6 @@ const Register = () => {
             />
           </div>
 
-          {/* Password */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Password *
@@ -150,7 +142,6 @@ const Register = () => {
             />
           </div>
 
-          {/* Confirm Password */}
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
               Confirm Password *

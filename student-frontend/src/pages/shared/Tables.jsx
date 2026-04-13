@@ -1,14 +1,13 @@
 import { useState, useMemo, useEffect } from 'react'
-import Table from '../components/Table'
-import Modal from '../components/Modal'
-import Button from '../components/Button'
-import Pagination from '../components/Pagination'
-import Toast from '../components/Toast'
-import ConfirmDialog from '../components/ConfirmDialog'
-import SkeletonTable from '../components/SkeletonTable'
-import Skeleton from '../components/Skeleton'
+import Table from '../../components/Table'  // ✅ FIXED: ../ to ../../
+import Modal from '../../components/Modal'  // ✅ FIXED: ../ to ../../
+import Button from '../../components/Button'  // ✅ FIXED: ../ to ../../
+import Pagination from '../../components/Pagination'  // ✅ FIXED: ../ to ../../
+import Toast from '../../components/Toast'  // ✅ FIXED: ../ to ../../
+import ConfirmDialog from '../../components/ConfirmDialog'  // ✅ FIXED: ../ to ../../
+import SkeletonTable from '../../components/SkeletonTable'  // ✅ FIXED: ../ to ../../
+import Skeleton from '../../components/Skeleton'  // ✅ FIXED: ../ to ../../
 import { Plus, RotateCcw, Copy, Check } from 'lucide-react'
-
 const Tables = () => {
   const [loading, setLoading] = useState(true)
 

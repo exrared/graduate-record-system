@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Button from '../components/Button'
+import Button from '../../components/Button'
 import { LogIn } from 'lucide-react'
-import { api } from '../api'
+import api from '../../services/api'  // ✅ FIXED: from '../../api' to '../../services/api'
 
 const Login = () => {
   const navigate = useNavigate()
-  const [identifier, setIdentifier] = useState('') // Can be email OR username
+  const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -17,10 +17,8 @@ const Login = () => {
     setError('')
 
     try {
-      // Determine if identifier is email or username
       const isEmail = identifier.includes('@') && identifier.includes('.')
       
-      // Prepare login data
       const loginData = {
         email: isEmail ? identifier.trim() : '',
         username: !isEmail ? identifier.trim() : '',
@@ -31,18 +29,14 @@ const Login = () => {
 
       const { user, token, token_type = 'Bearer' } = res.data
 
-      // Store token and user data
       localStorage.setItem('token', token)
       localStorage.setItem('token_type', token_type)
       localStorage.setItem('user', JSON.stringify(user))
       
-      // Set default authorization header for all future requests
       api.defaults.headers.common['Authorization'] = `${token_type} ${token}`
 
-      // Store login timestamp
       localStorage.setItem('last_login', new Date().toISOString())
 
-      // Redirect based on role (no complete-profile redirect)
       switch (user.role) {
         case 'admin':
           navigate('/admin-dashboard', { replace: true })
@@ -52,18 +46,15 @@ const Login = () => {
           break
         case 'user':
         case 'graduate':
-          // Direct to user dashboard - no profile completion check
           navigate('/user-dashboard', { replace: true })
           break
         default:
           setError('Unknown user role')
-          // Clear stored data if role is invalid
           localStorage.removeItem('token')
           localStorage.removeItem('user')
       }
 
     } catch (err) {
-      // Handle different error scenarios
       if (err.response) {
         const { status, data } = err.response
         
@@ -182,7 +173,7 @@ const Login = () => {
               <p className="font-semibold">Admin</p>
               <p>Email: admin@example.com</p>
               <p>Username: admin</p>
-              <p>Password: admin123</p>
+              <p>Password: password</p>
             </div>
             <div className="bg-gray-50 p-2 rounded">
               <p className="font-semibold">User</p>

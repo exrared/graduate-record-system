@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useSettings } from '../contexts/SettingsContext'
-import Button from '../components/Button'
-import Skeleton from '../components/Skeleton'
+import { useSettings } from '../../contexts/SettingsContext'  // ✅ FIXED: ../ to ../../
+import Button from '../../components/Button'  // ✅ FIXED: ../ to ../../
+import Skeleton from '../../components/Skeleton'  // ✅ FIXED: ../ to ../../
 import { Moon, Sun, Palette, Type, Gauge, Image, LogIn } from 'lucide-react'
 
 const Settings = () => {
@@ -21,40 +21,11 @@ const Settings = () => {
   })
 
   const fontFamilies = [
-    'Inter',
-    'Roboto',
-    'Open Sans',
-    'Lato',
-    'Montserrat',
-    'Poppins',
-    'Raleway',
-    'Ubuntu',
-    'Nunito',
-    'Source Sans Pro',
-    'Playfair Display',
-    'Merriweather',
-    'Work Sans',
-    'DM Sans',
-    'Space Grotesk',
-    'Plus Jakarta Sans',
-    'Outfit',
-    'Manrope',
-    'Figtree',
-    'Cabin',
-    'Quicksand',
-    'Comfortaa',
-    'Barlow',
-    'Fira Sans',
-    'Oswald',
-    'Dancing Script',
-    'Pacifico',
-    'Arial',
-    'Helvetica',
-    'Times New Roman',
-    'Georgia',
-    'Verdana',
-    'Tahoma',
-    'Courier New',
+    'Inter', 'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Poppins', 'Raleway', 'Ubuntu',
+    'Nunito', 'Source Sans Pro', 'Playfair Display', 'Merriweather', 'Work Sans', 'DM Sans',
+    'Space Grotesk', 'Plus Jakarta Sans', 'Outfit', 'Manrope', 'Figtree', 'Cabin', 'Quicksand',
+    'Comfortaa', 'Barlow', 'Fira Sans', 'Oswald', 'Dancing Script', 'Pacifico', 'Arial',
+    'Helvetica', 'Times New Roman', 'Georgia', 'Verdana', 'Tahoma', 'Courier New',
   ]
 
   const fontSizeOptions = ['12px', '14px', '16px', '18px', '20px', '22px', '24px']
@@ -82,7 +53,6 @@ const Settings = () => {
   }
 
   useEffect(() => {
-    // Simulate loading for 1 second
     const timer = setTimeout(() => {
       setLoading(false)
     }, 1000)
@@ -150,7 +120,6 @@ const Settings = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Dark Mode */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3 mb-4">
             {localSettings.darkMode ? (
@@ -185,7 +154,6 @@ const Settings = () => {
           </label>
         </div>
 
-        {/* Font Family */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3 mb-4">
             <Type className="w-6 h-6 text-gray-900 dark:text-white" />
@@ -210,7 +178,6 @@ const Settings = () => {
           </select>
         </div>
 
-        {/* Font Size */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3 mb-4">
             <Gauge className="w-6 h-6 text-gray-900 dark:text-white" />
@@ -241,7 +208,6 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* Side Navigation Colors - Combined */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700 lg:col-span-2">
           <div className="flex items-center gap-3 mb-6">
             <Palette className="w-6 h-6 text-gray-900 dark:text-white" />
@@ -251,7 +217,6 @@ const Settings = () => {
           </div>
           
           <div className="space-y-6">
-            {/* Background Color */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Background Color
@@ -288,7 +253,6 @@ const Settings = () => {
               </div>
             </div>
 
-            {/* Font Color */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Default Font Color
@@ -310,7 +274,6 @@ const Settings = () => {
               </div>
             </div>
 
-            {/* Hover Color */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Hover Font Color
@@ -332,7 +295,6 @@ const Settings = () => {
               </div>
             </div>
 
-            {/* Active Color */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Active Font Color
@@ -356,7 +318,6 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* TopNav Font Color */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3 mb-4">
             <Palette className="w-6 h-6 text-gray-900 dark:text-white" />
@@ -384,7 +345,6 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* TopNav Color */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3 mb-4">
             <Palette className="w-6 h-6 text-gray-900 dark:text-white" />
@@ -427,7 +387,6 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* Login Background */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700 lg:col-span-2">
           <div className="flex items-center gap-3 mb-4">
             <LogIn className="w-6 h-6 text-gray-900 dark:text-white" />
@@ -440,7 +399,6 @@ const Settings = () => {
           </p>
           
           <div className="space-y-4">
-            {/* Background Type */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Background Type
@@ -471,7 +429,6 @@ const Settings = () => {
               </div>
             </div>
 
-            {/* Background Color */}
             {localSettings.loginBackgroundType === 'color' && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -498,7 +455,6 @@ const Settings = () => {
               </div>
             )}
 
-            {/* Background Image */}
             {localSettings.loginBackgroundType === 'image' && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -534,7 +490,6 @@ const Settings = () => {
           </div>
         </div>
 
-        {/* Login Form Background */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3 mb-4">
             <Palette className="w-6 h-6 text-gray-900 dark:text-white" />
@@ -547,7 +502,6 @@ const Settings = () => {
           </p>
           
           <div className="space-y-4">
-            {/* Background Color */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Background Color
@@ -569,7 +523,6 @@ const Settings = () => {
               </div>
             </div>
 
-            {/* Opacity/Transparency */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Opacity: {localSettings.loginFormBgOpacity || 100}%
@@ -592,7 +545,6 @@ const Settings = () => {
               </p>
             </div>
 
-            {/* Preview */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Preview
@@ -613,7 +565,6 @@ const Settings = () => {
         </div>
       </div>
 
-      {/* Reset Button */}
       <div className="flex justify-end">
         <Button variant="secondary" onClick={handleReset}>
           Reset to Default

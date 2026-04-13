@@ -13,8 +13,8 @@ export default defineConfig({
       },
 
       manifest: {
-        name: 'My React PWA',
-        short_name: 'ReactPWA',
+        name: 'Student Graduate System',
+        short_name: 'StudSys',
         description: 'My React + Vite Progressive Web App',
 
         theme_color: '#ffffff',

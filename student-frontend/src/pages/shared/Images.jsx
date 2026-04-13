@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Image as ImageIcon, Download, Eye } from 'lucide-react'
-import Modal from '../components/Modal'
-import SkeletonImageGrid from '../components/SkeletonImageGrid'
-import Skeleton from '../components/Skeleton'
+import Modal from '../../components/Modal'  // ✅ FIXED: ../ to ../../
+import SkeletonImageGrid from '../../components/SkeletonImageGrid'  // ✅ FIXED: ../ to ../../
+import Skeleton from '../../components/Skeleton'  // ✅ FIXED: ../ to ../../
 
 const Images = () => {
   const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(null)
 
   useEffect(() => {
-    // Simulate loading for 1 second
     const timer = setTimeout(() => {
       setLoading(false)
     }, 1000)
